@@ -1,9 +1,11 @@
 #include <iostream>
 #include <cstdio>
 #include <vector>
+#include <functional>
 #include <queue>
 using namespace std;
 
+typedef pair<int, int> PP;
 const int MAXN = 105, INF = 0x3f3f3f3f;
 
 int M, N, P[MAXN], L[MAXN], X, dist[MAXN];
@@ -17,11 +19,11 @@ int Dijkstra(int s, int l, int r)
 {
 	fill(dist + 1, dist + N + 1, INF);
 	dist[s] = 0;
-	priority_queue<pair<int, int> > q;
-	q.push(pair<int, int>(0, s));
+	priority_queue<PP, vector<PP>, greater<PP> > q;
+	q.push(PP(0, s));
 	while (!q.empty())
 	{
-		pair<int, int> tmp = q.top(); q.pop();
+		PP tmp = q.top(); q.pop();
 		int id = tmp.second;
 		if (tmp.first > dist[id]) continue;
 		for (unsigned int i = 0; i < G[id].size(); i++)
@@ -30,7 +32,7 @@ int Dijkstra(int s, int l, int r)
 			if (dist[e.to] >= dist[id] + e.cost && L[e.to] >= l && L[e.to] <= r)
 			{
 				dist[e.to] = dist[id] + e.cost;
-				q.push(pair<int, int>(dist[e.to], e.to));
+				q.push(PP(dist[e.to], e.to));
 			}
 		}
 	}
@@ -42,7 +44,6 @@ int Dijkstra(int s, int l, int r)
 
 int main()
 {
-	//freopen("d:\\codes\\tmp\\in.txt", "r", stdin);
 	cin >> M >> N;
 	for (int i = 1; i <= N; i++)
 	{
