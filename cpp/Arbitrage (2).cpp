@@ -1,5 +1,5 @@
 #include <iostream>
-#include <unordered_map>
+#include <map>
 #include <string>
 #include <cmath>
 using namespace std;
@@ -10,7 +10,7 @@ int n, m;
 
 int main()
 {
-	unordered_map<string, int> mp;
+	map<string, int> mp;
 	string s, t;
 	double x;
 	int Kase = 1;
