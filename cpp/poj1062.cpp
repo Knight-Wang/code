@@ -1,65 +1,68 @@
-#include <iostream>
-#include <cstdio>
-#include <vector>
-#include <functional>
-#include <queue>
+#include <bits/stdc++.h>
 using namespace std;
-
-typedef pair<int, int> PP;
-const int MAXN = 105, INF = 0x3f3f3f3f;
-
-int M, N, P[MAXN], L[MAXN], X, dist[MAXN];
+const int MAXN = 105;
+const int INF = 0x3f3f3f3f;
+int times[MAXN], d[MAXN], level[MAXN];
+bool in[MAXN];
+int m, n;
 struct edge
 {
 	int to, cost;
 };
 vector<edge> G[MAXN];
-
-int Dijkstra(int s, int l, int r)
+bool spfa(int s, int minL, int maxL)
 {
-	fill(dist + 1, dist + N + 1, INF);
-	dist[s] = 0;
-	priority_queue<PP, vector<PP>, greater<PP> > q;
-	q.push(PP(0, s));
+	queue<int> q;
+	for (int i = 0; i <= n; i++)
+	{
+		in[i] = false;
+		d[i] = INF;
+		times[i] = 0;	
+	}
+	in[s] = true; d[s] = 0;
+	q.push(s);
 	while (!q.empty())
 	{
-		PP tmp = q.top(); q.pop();
-		int id = tmp.second;
-		if (tmp.first > dist[id]) continue;
-		for (unsigned int i = 0; i < G[id].size(); i++)
+		int tmp = q.front(); q.pop(); in[tmp] = false;
+		for (int i = 0; i < G[tmp].size(); i++)
 		{
-			edge & e = G[id][i];
-			if (dist[e.to] >= dist[id] + e.cost && L[e.to] >= l && L[e.to] <= r)
+			edge & e = G[tmp][i];
+			if (level[e.to] < minL || level[e.to] > maxL) continue;
+			if (d[tmp] + e.cost < d[e.to])
 			{
-				dist[e.to] = dist[id] + e.cost;
-				q.push(PP(dist[e.to], e.to));
+				d[e.to] = d[tmp] + e.cost;
+				times[e.to]++;
+				if (times[e.to] == n) return false;
+				if (!in[e.to])
+				{
+					in[e.to] = true;
+					q.push(e.to);
+				}
 			}
 		}
 	}
-	int minn = INF;
-	for (int i = 1; i <= N; i++)
-		minn = min(minn, dist[i] + P[i]);
-	return minn;
+	return true;
 }
-
 int main()
 {
-	cin >> M >> N;
-	for (int i = 1; i <= N; i++)
+	int p, l, x, t, v;
+	cin >> m >> n;
+	for (int i = 1; i <= n; i++)
 	{
-		cin >> P[i] >> L[i] >> X;
-		int id, cost;
-		for (int j = 0; j < X; j++)
+		cin >> p >> l >> x;
+		level[i] = l;
+		G[0].push_back(edge{i, p});
+		for (int j = 0; j < x; j++)
 		{
-			cin >> id >> cost;
-			G[i].push_back(edge{id, cost});
+			cin >> t >> v;
+			G[t].push_back(edge{i, v});
 		}
 	}
-	int l = L[1], ans = INF;
-	for (int i = max(l - M, 0); i <= l; i++)
+	int ans = INF;
+	for (int i = level[1] - m; i <= level[1]; i++)
 	{
-		int p = i, q = i + M;
-		ans = min(ans, Dijkstra(1, p, q));
+		spfa(0, i, i + m); 
+		ans = min(ans, d[1]); 
 	}
 	cout << ans << endl;
 	return 0;
