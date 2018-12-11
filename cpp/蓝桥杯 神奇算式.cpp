@@ -1,102 +1,61 @@
-// 蓝桥杯 神奇算式.cpp : 定义控制台应用程序的入口点。
+// 神奇算式.cpp : 定义控制台应用程序的入口点。
 //
 
 #include "stdafx.h"
 #include <iostream>
 #include <cstdio>
+#include <vector>
 using namespace std;
 
-//重新决出k号位置，v为已输出值 
-void pk(int* a, int* b, int n, int k, int v)
+int num1[10], num2[10];
+
+bool check(int x, int y, int z)
 {
-	int k1 = k * 2 + 1;
-	int k2 = k1 + 1;
-
-	if (k1 >= n || k2 >= n){
-		b[k] = -1;
-		return;
-	}
-
-	if (b[k1] == v)
-		pk(a, b, n, k1, v);
-	else
-		pk(a, b, n, k2, v);
-
-	//重新比较
-	if (b[k1] < 0)
+	while (x)
 	{
-		if (b[k2] >= 0)
-			b[k] = b[k2];
-		else
-			b[k] = -1;
-		return;
+		num1[x % 10]++;
+		x /= 10;
 	}
-
-	if (b[k2] < 0)
+	while (y)
 	{
-		if (b[k1] >= 0)
-			b[k] = b[k1];
-		else
-			b[k] = -1;
-		return;
+		num1[y % 10]++;
+		y /= 10;
 	}
-
-	if (b[k1] > b[k2]) //填空
-		b[k] = b[k1];
-	else
-		b[k] = b[k2];
-}
-
-//对a中数据，输出最大，次大元素位置和值 
-void f(int* a, int len)
-{
-	int n = 1;
-	while (n<len) n *= 2;
-
-	int* b = (int*)malloc(sizeof(int*) * (2 * n - 1));
-	int i;
-	for (i = 0; i < n; i++)
+	while (z)
 	{
-		if (i < len)
-			b[n - 1 + i] = i;
-		else
-			b[n - 1 + i] = -1;
+		num2[z % 10]++;
+		z /= 10;
 	}
-
-	//从最后一个向前处理
-	for (i = 2 * n - 1 - 1; i > 0; i -= 2)
+	bool flag = true;
+	for (int i = 0; i <= 9; i++)
 	{
-		if (b[i] < 0)
+		if (num1[i] != num2[i] || num1[i] > 1)
 		{
-			if (b[i - 1] >= 0)
-				b[(i - 1) / 2] = b[i - 1];
-			else
-				b[(i - 1) / 2] = -1;
-		}
-		else{
-			if (a[b[i]] > a[b[i - 1]])
-				b[(i - 1) / 2] = b[i];
-			else
-				b[(i - 1) / 2] = b[i - 1];
+			flag = false;
+			break;
 		}
 	}
-
-	//输出树根
-	printf("%d : %d\n", b[0], a[b[0]]);
-
-	//值等于根元素的需要重新pk
-	pk(a, b, 2 * n - 1, 0, b[0]);
-
-	//再次输出树根
-	printf("%d : %d\n", b[0], a[b[0]]);
-
-	free(b);
+	return flag;
 }
 
 int main()
 {
-	int a[] = { 54, 55, 18, 16, 122, 17, 30, 9, 58 };
-	f(a, 9);
+	int cnt = 0;
+	for (int i = 1; i <= 999; i++)
+	{
+		for (int j = i; j <= 999; j++)
+		{
+			memset(num1, 0, sizeof(num1));
+			memset(num2, 0, sizeof(num2));
+			int x = i * j;
+			if (x >= 1000 && x <= 9999 && check(i, j, x))
+			{
+				cnt++;
+				cout << i << " " << j << " " << x << endl;
+			}
+		}
+	}
+	cout << cnt << endl;
 	system("pause");
 	return 0;
 }

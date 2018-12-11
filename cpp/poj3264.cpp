@@ -1,90 +1,49 @@
-// poj3264.cpp : 定义控制台应用程序的入口点。
-//
-
-//#include "stdafx.h"
 #include <iostream>
 #include <cstdio>
-#include <algorithm>
 using namespace std;
 
-const int MAXN = 65536;
+const int MAXN = 50005;
 const int INF = 0x3f3f3f3f;
+int a[MAXN], minn[MAXN * 4], maxn[MAXN * 4], n, m;
 
-struct node
+void build(int num, int l, int r)
 {
-	int maxn, minn;
-};
-
-node data[2 * MAXN - 1];
-int n, q, x, y, tmp;
-
-void init(int n_)
-{
-	n = 1;
-	while (n < n_)
-	{
-		n *= 2;
-	}
-	for (int i = 0; i < 2 * n - 1; i++)
-	{
-		data[i].maxn = -INF;
-		data[i].minn = INF;
-	}
+	if (l == r) { maxn[num] = minn[num] = a[l]; return; }
+	int m = l + r >> 1;
+	build(num * 2, l, m);
+	build(num * 2 + 1, m + 1, r);
+	maxn[num] = max(maxn[num * 2], maxn[num * 2 + 1]);
+	minn[num] = min(minn[num * 2], minn[num * 2 + 1]);
 }
 
-void update(int k, int a)
+int query(int num, int l, int r, int x, int y, int type)
 {
-	k += n - 1;
-	data[k].minn = data[k].maxn = a;
-	while (k)
-	{
-		k = (k - 1) / 2;
-		data[k].minn = min(data[2 * k + 1].minn, data[2 * k + 2].minn);
-		data[k].maxn = max(data[2 * k + 1].maxn, data[2 * k + 2].maxn);
+	if (x <= l && y >= r) return type ? maxn[num] : minn[num];
+	int m = l + r >> 1;
+	int ans = type ? -INF : INF;
+	if (x <= m) 
+	{ 
+		int tmp = query(num * 2, l, m, x, y, type); 
+		ans = type ? max(ans, tmp) : min(ans, tmp);
 	}
-}
-
-int query(int a, int b, int k, int l, int r, int type) 
-{
-	if (r <= a || l >= b)
-	{
-		if (type)
-			return INF;
-		else
-			return -INF;
+	if (y >= m + 1)
+	{	
+		int tmp = query(num * 2 + 1, m + 1, r, x, y, type);
+		ans = type ? max(ans, tmp) : min(ans, tmp);
 	}
-	if (l >= a && r <= b)
-	{
-		if (type)
-			return data[k].minn;
-		else
-			return data[k].maxn;
-	}
-	int x = query(a, b, 2 * k + 1, l, (l + r) / 2, type);
-	int y = query(a, b, 2 * k + 2, (l + r) / 2, r, type);
-	if (type)
-		return min(x, y);
-	return max(x, y);
+	return ans;
 }
 
 int main()
 {
-	scanf("%d %d", &n, &q);
-	int n_ = n;
-	init(n);
-	for (int i = 0; i < n_; i++)
+	int l, r;
+	scanf("%d %d", &n, &m);
+	for (int i = 1; i <= n; i++) scanf("%d", &a[i]);
+	build(1, 1, n);
+	for (int i = 0; i < m; i++) 
 	{
-		scanf("%d", &tmp);
-		update(i, tmp);
+		scanf("%d %d", &l, &r);
+		printf("%d\n", query(1, 1, n, l, r, 1) - query(1, 1, n, l, r, 0));
 	}
-	for (int i = 0; i < q; i++)
-	{
-		scanf("%d %d", &x, &y);
-		int s = query(x - 1, y, 0, 0, n, 1);
-		int t = query(x - 1, y, 0, 0, n, 0);
-		printf("%d\n", t - s);
-	}
-	//system("pause");
 	return 0;
 }
-
