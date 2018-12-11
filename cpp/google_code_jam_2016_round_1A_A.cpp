@@ -1,12 +1,9 @@
-#include "stdafx.h"
 #include <iostream>
 #include <cstdio>
 #include <string>
 using namespace std;
 int main()
 {
-	freopen("A-large-practice.in", "r", stdin);
-	freopen("fuck.txt", "w", stdout);
 	string s;
 	int T;
 	cin >> T;
@@ -32,4 +29,3 @@ int main()
 	}
 	return 0;
 }
-
