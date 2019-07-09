@@ -9,27 +9,23 @@ public:
         l[0] = sl[0] = height[0]; r[n - 1] = sr[n - 1] = height[n - 1];
         for (int i = 1; i < n; i++) { l[i] = max(l[i - 1], height[i]); sl[i] = sl[i - 1] + height[i]; }
         for (int i = n - 2; i >= 0; i--) { r[i] = max(r[i + 1], height[i]); sr[i] = sr[i + 1] + height[i]; }
-        int id = max_element(height.begin(), height.end()) - height.begin();
-        int maxn = height[id];
-        vector<int> lp(1, id), rp(1, id);
+        int max_id = max_element(height.begin(), height.end()) - height.begin(), id = max_id, ans = 0;
         for (int i = id - 1; i >= 0; i--)
         {
-            if (l[i] == height[i]) lp.push_back(i);
+            if (l[i] == height[i])
+            {
+                if (id - i > 1) ans += height[i] * (id - i - 1) - (sl[id - 1] - sl[i]);
+                id = i;
+            }
         }
+        id = max_id;
         for (int i = id + 1; i < n; i++)
         {
-            if (r[i] == height[i]) rp.push_back(i);
-        }
-        int ans = 0;
-        for (int i = 1; i < lp.size(); i++)
-        {
-            if (lp[i - 1] - lp[i] == 1) continue;
-            ans += height[lp[i]] * (lp[i - 1] - lp[i] - 1) - (sl[lp[i - 1] - 1] - sl[lp[i]]);
-        }
-        for (int i = 1; i < rp.size(); i++)
-        {
-            if (rp[i] - rp[i - 1] == 1) continue;
-            ans += height[rp[i]] * (rp[i] - rp[i - 1] - 1) - (sr[rp[i - 1] + 1] - sr[rp[i]]);
+            if (r[i] == height[i])
+            {
+                if (i - id > 1) ans += height[i] * (i - id - 1) - (sr[id + 1] - sr[i]);
+                id = i;
+            }
         }
         return ans;
     }
