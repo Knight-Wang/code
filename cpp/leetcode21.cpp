@@ -6,52 +6,28 @@
  *     ListNode(int x) : val(x), next(NULL) {}
  * };
  */
-class Solution {
+class Solution
+{
 public:
-    ListNode* mergeTwoLists(ListNode* l1, ListNode* l2) {
-        if (!l1) return l2;
-        if (!l2) return l1;
-        ListNode * s1 = l1, * s2 = l2, * res = NULL, * tail = NULL;
-        while (s1 && s2)
+    ListNode* mergeTwoLists(ListNode* l1, ListNode* l2)
+    {
+        if (!l1 && !l2) return NULL;
+        ListNode* res = new ListNode(0), *a = l1, *b = l2, *t = res;
+        while (a && b)
         {
-            if (!tail) 
-            {
-                tail = new ListNode(0);
-                res = tail;
-            }
-            else
-            {
-                tail->next = new ListNode(0);
-                tail = tail->next;
-            }
-            if (s1->val < s2->val) 
-            {
-                tail->val = s1->val;
-                s1 = s1->next;
-            }
-            else 
-            {
-                tail->val = s2->val;
-                s2 = s2->next;
-            }
+            if (a->val < b->val) { t->val = a->val; a = a->next; }
+            else { t->val = b->val; b = b->next; }
+            if (a || b) { t->next = new ListNode(0); t = t->next; }
         }
-        if (s1)
+        while (a)
         {
-            while (s1)
-            {
-                tail->next = new ListNode(s1->val);
-                tail = tail->next;
-                s1 = s1->next;
-            }
+            t->val = a->val; a = a->next;
+            if (a) { t->next = new ListNode(0); t = t->next;}
         }
-        if (s2)
+        while (b)
         {
-            while (s2)
-            {
-                tail->next = new ListNode(s2->val);
-                tail = tail->next;
-                s2 = s2->next;
-            }
+            t->val = b->val; b = b->next;
+            if (b) { t->next = new ListNode(0); t = t->next;}
         }
         return res;
     }
