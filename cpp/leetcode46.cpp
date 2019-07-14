@@ -1,43 +1,32 @@
-#include <iostream>
-#include <cstdio>
-#include <algorithm>
-#include <vector>
-using namespace std;
-
-class Solution 
+class Solution
 {
 public:
-    vector<vector<int> > permute(vector<int>& nums) 
-	{
-		vector<vector<int> > res;
-		int n = nums.size();
-		sort(nums.begin(), nums.end());
-		do
-		{
-			vector<int> tmp;
-			for (int i = 0; i < n; i++)
-			{
-				tmp.push_back(nums[i]);
-			}
-			res.push_back(tmp);
-		} while(next_permutation(nums.begin(), nums.end()));
-		return res;
+    vector<vector<int>> work(vector<int>& a)
+    {
+        int n = a.size();
+        vector<vector<int>> ans;
+        if (n == 1)
+        {
+            vector<int> t(1, a[0]);
+            ans.push_back(t);
+            return ans;
+        }
+        for (int i = 0; i < n; i++)
+        {
+            vector<int> t(a.begin(), a.end());
+            t.erase(t.begin() + i);
+            vector<vector<int>> x = work(t);
+            for (auto it: x)
+            {
+                vector<int> p(1, a[i]);
+                p.insert(p.end(), it.begin(), it.end());
+                ans.push_back(p);
+            }
+        }
+        return ans;
+    }
+    vector<vector<int>> permute(vector<int>& nums)
+    {
+        return work(nums);
     }
 };
-
-int main()
-{
-	Solution s;
-	int tmp[] = {3, 2, 1};
-	vector<int> x(tmp, tmp + 3);
-	vector<vector<int> > res = s.permute(x);
-	for (int i = 0; i < res.size(); i++)
-	{
-		for (int j = 0; j < res[i].size(); j++)
-		{
-			cout << res[i][j] << " ";
-		}
-		puts("");
-	}
-	return 0;
-}
