@@ -12,28 +12,16 @@ class Solution
 public:
     pair<int, int> dfs(TreeNode* root)
     {
-        if (root->left == NULL && root->right == NULL)
-        {
-            return pair<int, int>(0, root->val);
-        }
-        int x = 0, y = root->val;
-        if (root->left)
-        {
-            pair<int, int> l = dfs(root->left);
-            x += max(l.first, l.second);
-            y += l.first;
-        }
-        if (root->right)
-        {
-            pair<int, int> r = dfs(root->right);
-            x += max(r.first, r.second);
-            y += r.first;
-        }
-        return pair<int, int>(x, y);
+        if (root == NULL) return make_pair(0, 0);
+        pair<int, int> l = dfs(root->left);
+        pair<int, int> r = dfs(root->right);
+        pair<int, int> res;
+        res.first = l.second + r.second + root->val;
+        res.second = max(l.first, l.second) + max(r.first, r.second);
+        return res;
     }
     int rob(TreeNode* root)
     {
-        if (root == NULL) return 0;
         pair<int, int> res = dfs(root);
         return max(res.first, res.second);
     }
